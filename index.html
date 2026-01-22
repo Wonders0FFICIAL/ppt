@@ -3,23 +3,40 @@
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <video autoplay muted playsinline id="video-player">
-            <source src="sample.mp4" type="video/mp4">
-        </video>
-        <button id="play-fullscreen">|></button>
+        <div id="fs">
+            <video autoplay muted playsinline id="video-player">
+                <source src="sample.mp4" type="video/mp4">
+            </video>
+            <button id="play-fullscreen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white"><polygon points="8,5 19,12 8,19" /></svg> </button>
+            <button id="exit-fullscreen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 3 3 3 3 9" /><polyline points="15 21 21 21 21 15" /><polyline points="21 9 21 3 15 3" /><polyline points="3 15 3 21 9 21" /></svg></button>
+        </div>
         <script>
+            var playing = false;
             document.getElementById("play-fullscreen").addEventListener("click", function() {
+                var fs = document.getElementById("fs");
+
                 var video = document.getElementById("video-player");
-                if (video.requestFullscreen) {
-                    video.requestFullscreen();
-                } else if (video.mozRequestFullScreen) { /* Firefox */
-                    video.mozRequestFullScreen();
-                } else if (video.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-                    video.webkitRequestFullscreen();
-                } else if (video.msRequestFullscreen) { /* IE/Edge */
-                    video.msRequestFullscreen();
+                if (fs.requestFullscreen) {
+                    fs.requestFullscreen();
+                } else if (fs.mozRequestFullScreen) { /* Firefox */
+                    fs.mozRequestFullScreen();
+                } else if (fs.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                    fs.webkitRequestFullscreen();
+                } else if (fs.msRequestFullscreen) { /* IE/Edge */
+                    fs.msRequestFullscreen();
                 }
-                video.play();
+                if (!playing) {
+                    video.play();
+                    playing = true;
+                } else {
+                    video.pause();
+                    playing = false;
+                }
+            });
+            document.getElementById("exit-fullscreen").addEventListener("click", function() {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
             });
         </script>
     </body>
