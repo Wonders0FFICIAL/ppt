@@ -11,6 +11,8 @@
             <button id="exit-fullscreen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 3 3 3 3 9" /><polyline points="15 21 21 21 21 15" /><polyline points="21 9 21 3 15 3" /><polyline points="3 15 3 21 9 21" /></svg></button>
         </div>
         <script>
+    document.addEventListener("DOMContentLoaded", () => {
+            stops = [4, 9, 12, 14, 16, 19, 21, 23, 25, 26, 28];
             var playing = false;
             document.getElementById("play-fullscreen").addEventListener("click", function() {
                 var fs = document.getElementById("fs");
@@ -32,12 +34,24 @@
                     video.pause();
                     playing = false;
                 }
+               video.addEventListener("timeupdate", () => {
+                const currentSecond = Math.floor(video.currentTime);
+                if (stops.includes(currentSecond)) {
+                    video.pause();
+                    playing = false;
+                    console.log("Video paused at " + currentSecond + " seconds");
+                    stops.splice(stops.indexOf(currentSecond), 1);
+                }
+                console.log(currentSecond);
+            });
+
             });
             document.getElementById("exit-fullscreen").addEventListener("click", function() {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 }
             });
+        });
         </script>
     </body>
 </html>
