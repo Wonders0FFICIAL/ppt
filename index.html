@@ -9,49 +9,132 @@
             </video>
             <button id="play-fullscreen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white"><polygon points="8,5 19,12 8,19" /></svg> </button>
             <button id="exit-fullscreen"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 3 3 3 3 9" /><polyline points="15 21 21 21 21 15" /><polyline points="21 9 21 3 15 3" /><polyline points="3 15 3 21 9 21" /></svg></button>
+            <button id="go-back-home-little-kid"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <button id="go-forth"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
         <script>
-    document.addEventListener("DOMContentLoaded", () => {
-            stops = [4, 9, 12, 14, 16, 19, 21, 23, 25, 26, 28];
-            var playing = false;
-            document.getElementById("play-fullscreen").addEventListener("click", function() {
-                var fs = document.getElementById("fs");
+document.addEventListener("DOMContentLoaded", () => {
 
-                var video = document.getElementById("video-player");
-                if (fs.requestFullscreen) {
-                    fs.requestFullscreen();
-                } else if (fs.mozRequestFullScreen) { /* Firefox */
-                    fs.mozRequestFullScreen();
-                } else if (fs.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-                    fs.webkitRequestFullscreen();
-                } else if (fs.msRequestFullscreen) { /* IE/Edge */
-                    fs.msRequestFullscreen();
-                }
-                if (!playing) {
-                    video.play();
-                    playing = true;
-                } else {
-                    video.pause();
-                    playing = false;
-                }
-               video.addEventListener("timeupdate", () => {
-                const currentSecond = Math.floor(video.currentTime);
-                if (stops.includes(currentSecond)) {
-                    video.pause();
-                    playing = false;
-                    console.log("Video paused at " + currentSecond + " seconds");
-                    stops.splice(stops.indexOf(currentSecond), 1);
-                }
-                console.log(currentSecond);
-            });
+    let stops = [4, 9, 12, 14, 16, 19, 22, 23, 25, 26, 28];
+    const masterStops = [...stops];
 
-            });
-            document.getElementById("exit-fullscreen").addEventListener("click", function() {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            });
-        });
-        </script>
+    const video = document.getElementById("video-player");
+    const playBtn = document.getElementById("play-fullscreen");
+    const backBtn = document.getElementById("go-back-home-little-kid");
+    const forwardBtn = document.getElementById("go-forth");
+    const fsContainer = document.getElementById("fs");
+
+    let playing = false;
+
+    // ------------------------
+    // TIMEUPDATE (ONLY ONCE)
+    // ------------------------
+    video.addEventListener("timeupdate", () => {
+        const currentSecond = Math.floor(video.currentTime);
+
+        if (stops.includes(currentSecond)) {
+            video.pause();
+            playing = false;
+
+            // remove stop so it doesn't trigger again
+            stops = stops.filter(s => s !== currentSecond);
+
+            playBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     viewBox="0 0 24 24" 
+                     width="16" 
+                     height="16" 
+                     fill="white">
+                    <polygon points="8,5 19,12 8,19" />
+                </svg>
+            `;
+        }
+    });
+
+    // ------------------------
+    // PLAY BUTTON
+    // ------------------------
+    playBtn.addEventListener("click", () => {
+
+        // fullscreen
+        if (fsContainer.requestFullscreen) {
+            fsContainer.requestFullscreen();
+        }
+
+        if (!playing) {
+            video.play();
+            playing = true;
+
+            playBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     viewBox="0 0 24 24" 
+                     width="16" 
+                     height="16" 
+                     fill="white">
+                    <rect x="6" y="4" width="4" height="16"/>
+                    <rect x="14" y="4" width="4" height="16"/>
+                </svg>
+            `;
+        } else {
+            video.pause();
+            playing = false;
+
+            playBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     viewBox="0 0 24 24" 
+                     width="16" 
+                     height="16" 
+                     fill="white">
+                    <polygon points="8,5 19,12 8,19" />
+                </svg>
+            `;
+        }
+    });
+
+    // ------------------------
+    // BACK BUTTON
+    // ------------------------
+    backBtn.addEventListener("click", () => {
+        video.pause();
+        playing = false;
+
+        const current = Math.floor(video.currentTime);
+
+        const previousStops = masterStops.filter(t => t < current);
+
+        if (previousStops.length > 0) {
+            const target = previousStops[previousStops.length - 1];
+            video.currentTime = target;
+
+            // re-enable that stop if needed
+            if (!stops.includes(target)) {
+                stops.push(target);
+                stops.sort((a, b) => a - b);
+            }
+
+        } else {
+            video.currentTime = 0;
+        }
+    });
+
+    // ------------------------
+    // FORWARD BUTTON
+    // ------------------------
+    forwardBtn.addEventListener("click", () => {
+        video.pause();
+        playing = false;
+
+        const current = Math.floor(video.currentTime);
+
+        const nextStops = masterStops.filter(t => t > current);
+
+        if (nextStops.length > 0) {
+            video.currentTime = nextStops[0];
+        }
+    });
+
+});
+</script>
+
     </body>
 </html>
