@@ -15,7 +15,8 @@
         <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    let stops = [4, 9, 12, 14, 16, 19, 22, 23, 25, 26, 28];
+    let stops = [2, 8, 12, 17, 23, 28, 32, 38, 42, 48, 56, 63, 68, 73, 76, 82, 87
+    ];
     const masterStops = [...stops];
 
     const video = document.getElementById("video-player");
@@ -24,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const forwardBtn = document.getElementById("go-forth");
     const fsContainer = document.getElementById("fs");
 
-    let playing = false;
+    let playing = false; 
 
     // ------------------------
     // TIMEUPDATE (ONLY ONCE)
@@ -38,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // remove stop so it doesn't trigger again
             stops = stops.filter(s => s !== currentSecond);
-
+  
             playBtn.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" 
                      viewBox="0 0 24 24" 
